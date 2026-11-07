@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robiul Islam - 30 Sec Predictor V2</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; background-color: #07090e; color: #f3f4f6; overflow-x: hidden; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(245, 158, 11, 0.25); }
+        .gold-gradient { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .btn-gradient { background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%); }
+        .header-glow { text-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+        #cursor-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; }
+    </style>
+    <!-- Swarm Cursor Canvas -->
+    <canvas id="cursor-canvas"></canvas>
+</head>
+<body class="min-h-screen flex items-center justify-center p-3">
+
+    <div class="w-full max-w-md bg-[#0b1329] border border-amber-500/30 rounded-3xl shadow-[0_0_35px_rgba(245,158,11,0.15)] overflow-hidden">
+
+        <!-- ================= 1. LOCK SCREEN ================= -->
+        <div id="screen-lock" class="p-5 space-y-6">
+            <!-- Top Nav -->
+            <div class="flex justify-between items-center">
+                <div class="bg-cyan-500/20 border border-cyan-400 text-cyan-300 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_10px_rgba(6,182,212,0.4)]">
+                    PLAY SMARTER
+                </div>
+                <button onclick="toggleHide()" class="bg-cyan-950 border border-cyan-500 text-cyan-300 text-xs font-semibold px-4 py-1.5 rounded-xl">
+                    HIDE
+                </button>
+            </div>
+
+            <!-- Header Branding (Crown, Wings, Robiul Islam, Banner) -->
+            <div class="text-center relative pt-2 space-y-1">
+                <!-- Billiard Balls Flanking Top -->
+                <div class="flex justify-between items-center px-4 mb-1">
+                    <div class="flex items-center space-x-1">
+                        <div class="w-7 h-7 rounded-full bg-red-500 text-white font-bold text-xs flex items-center justify-center shadow-lg border border-red-300">4</div>
+                        <div class="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold text-[9px] flex items-center justify-center shadow-lg border border-emerald-300">3</div>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <div class="w-5 h-5 rounded-full bg-red-500 text-white font-bold text-[9px] flex items-center justify-center shadow-lg border border-red-300">8</div>
+                        <div class="w-7 h-7 rounded-full bg-emerald-500 text-white font-bold text-xs flex items-center justify-center shadow-lg border border-emerald-300">9</div>
+                    </div>
+                </div>
+
+                <!-- Crown & Wings Graphic -->
+                <div class="flex justify-center items-center space-x-2">
+                    <span class="text-amber-400 text-xl">👑</span>
+                </div>
+                <div class="text-cyan-400 text-xs tracking-widest font-mono">✦ ── WINGS OF FORTUNE ── ✦</div>
+                <h1 class="text-2xl font-black font-orbitron text-amber-400 header-glow tracking-wide py-0.5">ROBIUL ISLAM</h1>
+                
+                <!-- Gold Banner -->
+                <div class="mt-2 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-gray-950 font-extrabold font-orbitron text-xs py-2 px-4 rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.5)] border border-amber-300">
+                    30 SEC PREDICTOR V2
+                </div>
+            </div>
+
+            <!-- Golden Lock Icon -->
+            <div class="flex justify-center py-2">
+                <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+                    <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                </div>
+            </div>
+
+            <!-- Password Form -->
+            <div class="space-y-4">
+                <div>
+                    <input type="password" id="auth-pass" placeholder="Enter Password" onkeydown="if(event.key==='Enter') handleAuth()" class="w-full bg-[#070a14] border-2 border-cyan-500/60 focus:border-cyan-400 px-4 py-3.5 rounded-2xl text-center text-sm font-mono tracking-widest text-cyan-300 placeholder-gray-500 outline-none shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                </div>
+                <button onclick="handleAuth()" class="w-full btn-gradient hover:opacity-95 text-white font-black font-orbitron tracking-wider py-3.5 rounded-2xl text-sm shadow-[0_0_20px_rgba(6,182,212,0.4)] cursor-pointer">
+                    UNLOCK PREDICTOR
+                </button>
+                <p id="auth-error" class="text-xs text-red-400 text-center hidden"></p>
+            </div>
+        </div>
+
+
+        <!-- ================= 2. DASHBOARD SCREEN ================= -->
+        <div id="screen-dashboard" class="p-5 space-y-4 hidden">
+            <!-- Top Bar with Interval Toggles -->
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="setIntervalMode('30s')" id="btn-30s" class="gold-gradient text-gray-950 font-black py-2.5 rounded-xl text-xs tracking-wider shadow-lg cursor-pointer">
+                    30 Sec
+                </button>
+                <button onclick="setIntervalMode('1m')" id="btn-1m" class="bg-gray-800 text-gray-300 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer">
+                    1 Min
+                </button>
+            </div>
+
+            <!-- Period Issue Number Card -->
+            <div class="bg-[#111827] border border-gray-700 rounded-xl px-4 py-2.5 text-center font-mono text-xs text-amber-400 shadow-inner flex items-center justify-center space-x-2">
+                <span>🎫</span>
+                <span id="period-issue">Loading Live Period...</span>
+            </div>
+
+            <!-- Big Gold GET RESULT Button -->
+            <button onclick="fetchSignal()" class="w-full gold-gradient hover:opacity-95 text-gray-950 font-black font-orbitron tracking-wider py-3.5 rounded-2xl text-sm shadow-[0_0_20px_rgba(245,158,11,0.4)] cursor-pointer">
+                GET RESULT
+            </button>
+
+            <!-- Current Period Display -->
+            <div class="bg-[#111827] border border-gray-800 rounded-2xl p-3 text-center space-y-1">
+                <div class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold flex items-center justify-center space-x-1">
+                    <span>☑ CURRENT PERIOD & COUNTDOWN</span>
+                </div>
+                <div id="current-period-display" class="font-mono text-sm font-bold text-amber-300">--</div>
+            </div>
+
+            <!-- Current Result Card -->
+            <div class="glass-card rounded-2xl p-4 text-center space-y-2 border border-amber-500/40 relative">
+                <div class="flex justify-between items-center text-[11px] px-2">
+                    <div class="flex items-center space-x-1.5">
+                        <span id="model-led" class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                        <span id="model-status-text" class="text-gray-300 font-mono text-[10px]">10 AI MODELS ACTIVE</span>
+                    </div>
+                    <div class="bg-amber-500/20 border border-amber-500/40 text-amber-300 px-2 py-0.5 rounded font-mono text-[10px]" id="win-prob-badge">
+                        Win: 97.5%
+                    </div>
+                </div>
+
+                <div id="result-number" class="text-5xl font-extrabold font-orbitron text-amber-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]">--</div>
+                <div id="result-badge" class="inline-block bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-bold px-5 py-1 rounded-full uppercase tracking-wider">
+                    Waiting for Signal...
+                </div>
+            </div>
+
+            <!-- Navigation & Admin Control Buttons -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button onclick="promptAdminAccess()" class="bg-gray-800 hover:bg-gray-700 text-amber-400 font-bold py-2 rounded-xl text-xs cursor-pointer">
+                    🛠️ Admin Panel
+                </button>
+                <button onclick="showScreen('lock')" class="bg-gray-800 hover:bg-gray-700 text-red-400 font-bold py-2 rounded-xl text-xs cursor-pointer">
+                    🔒 Lock App
+                </button>
+            </div>
+
+            <!-- History Table matching exact screenshot style -->
+            <div class="bg-[#0f172a] border border-gray-800 rounded-2xl overflow-hidden shadow-lg mt-2">
+                <div class="grid grid-cols-4 bg-amber-500/20 text-amber-400 text-[11px] font-bold py-2 px-3 text-center uppercase tracking-wider border-b border-amber-500/30">
+                    <div>PERIOD</div>
+                    <div>NUMBER</div>
+                    <div>COLOR</div>
+                    <div>SIZE</div>
+                </div>
+                <div id="history-rows" class="divide-y divide-gray-800/60 text-xs font-mono max-h-48 overflow-y-auto">
+                    <!-- Dynamic rows populated via JS -->
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= 3. ADMIN PANEL SCREEN ================= -->
+        <div id="screen-admin" class="p-5 space-y-4 hidden">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider">🛠️ Admin Master Panel</h2>
+                <button onclick="showScreen('dashboard')" class="bg-gray-800 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">Back</button>
+            </div>
+
+            <!-- Credentials & Link Management -->
+            <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-4 space-y-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">Link & Passwords Management</h3>
+                <div>
+                    <label class="text-[11px] text-gray-400 block mb-1">Target Platform URL</label>
+                    <input type="text" id="new-target-platform" value="https://dkwin9.com" class="w-full bg-gray-950 border border-gray-700 px-3 py-2 rounded-xl text-xs font-mono text-cyan-300">
+                </div>
+                <div>
+                    <label class="text-[11px] text-gray-400 block mb-1">Invitation / Referral Code</label>
+                    <input type="text" id="new-invitation-code" value="787222388616" class="w-full bg-gray-950 border border-gray-700 px-3 py-2 rounded-xl text-xs font-mono text-cyan-300">
+                </div>
+                <div>
+                    <label class="text-[11px] text-gray-400 block mb-1">New Admin Password</label>
+                    <input type="text" id="new-admin-pass" value="Robiul25890" class="w-full bg-gray-950 border border-gray-700 px-3 py-2 rounded-xl text-xs font-mono text-cyan-300">
+                </div>
+                <div>
+                    <label class="text-[11px] text-gray-400 block mb-1">New Trial / Normal Password</label>
+                    <input type="text" id="new-normal-pass" value="RRRR" class="w-full bg-gray-950 border border-gray-700 px-3 py-2 rounded-xl text-xs font-mono text-cyan-300">
+                </div>
+                <button onclick="updateAdminConfig()" class="w-full gold-gradient text-gray-950 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Update Link & Passwords</button>
+                <p id="admin-msg" class="text-xs text-emerald-400 text-center hidden"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentInterval = '30s';
+        let autoPollTimer = null;
+
+        function showScreen(screenId) {
+            document.getElementById('screen-lock').classList.add('hidden');
+            document.getElementById('screen-dashboard').classList.add('hidden');
+            document.getElementById('screen-admin').classList.add('hidden');
+            document.getElementById('screen-' + screenId).classList.remove('hidden');
+        }
+
+        function handleAuth() {
+            const password = document.getElementById('auth-pass').value.trim();
+            if(!password) {
+                alert('Please enter password!');
+                return;
+            }
+
+            // Strict & Instant Client-Side Access Check
+            if(password === 'Robiul25890' || password === 'Robiulislam25890' || password === 'admin') {
+                showScreen('admin');
+                return;
+            }
+            if(password === 'RRRR' || password === 'rrrr' || password === '1234' || password === 'trial') {
+                showScreen('dashboard');
+                fetchSignal();
+                startAutoPoll();
+                return;
+            }
+
+            // Fallback backend auth check
+            fetch('/api/auth', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({password})
+            }).then(res => res.json()).then(data => {
+                if(data.redirect === 'admin') {
+                    showScreen('admin');
+                } else if(data.status === 'success') {
+                    showScreen('dashboard');
+                    fetchSignal();
+                    startAutoPoll();
+                } else {
+                    alert(data.message || 'Invalid Password! Access Denied.');
+                }
+            }).catch(e => {
+                alert('Invalid Password!');
+            });
+        }
+
+        function promptAdminAccess() {
+            const pass = prompt("🔐 Enter Admin Password (Robiul25890 / Robiulislam25890):");
+            if(!pass) return;
+            if(pass === 'Robiul25890' || pass === 'Robiulislam25890') {
+                showScreen('admin');
+            } else {
+                alert('❌ Incorrect Admin Password!');
+            }
+        }
+
+        function startAutoPoll() {
+            if(autoPollTimer) clearInterval(autoPollTimer);
+            const intervalTime = currentInterval === '30s' ? 30000 : 60000;
+            autoPollTimer = setInterval(() => {
+                fetchSignal();
+            }, intervalTime);
+        }
+
+        function setIntervalMode(mode) {
+            currentInterval = mode;
+            if(mode === '30s') {
+                document.getElementById('btn-30s').className = "gold-gradient text-gray-950 font-black py-2.5 rounded-xl text-xs tracking-wider shadow-lg cursor-pointer";
+                document.getElementById('btn-1m').className = "bg-gray-800 text-gray-300 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer";
+            } else {
+                document.getElementById('btn-1m').className = "gold-gradient text-gray-950 font-black py-2.5 rounded-xl text-xs tracking-wider shadow-lg cursor-pointer";
+                document.getElementById('btn-30s').className = "bg-gray-800 text-gray-300 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer";
+            }
+            fetchSignal();
+            startAutoPoll();
+        }
+
+        async function fetchSignal() {
+            try {
+                const res = await fetch('/api/signal', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({interval: currentInterval})
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    const periodNum = data.period || "20261108100050207";
+                    const countdown = data.countdown || 30;
+                    document.getElementById('period-issue').textContent = `Period: ${periodNum} (${countdown}s)`;
+                    document.getElementById('current-period-display').textContent = `Active Period: ${periodNum} | Next in ${countdown}s`;
+                    document.getElementById('result-number').textContent = data.number;
+                    
+                    const badge = document.getElementById('result-badge');
+                    const colorText = data.color.toUpperCase();
+                    const sizeText = data.size.toUpperCase();
+                    badge.textContent = `${colorText} • ${sizeText}`;
+                    if(colorText === 'GREEN') {
+                        badge.className = "inline-block bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-bold px-5 py-1 rounded-full uppercase tracking-wider";
+                    } else {
+                        badge.className = "inline-block bg-red-500/20 border border-red-500/50 text-red-300 text-xs font-bold px-5 py-1 rounded-full uppercase tracking-wider";
+                    }
+
+                    const winProb = data.win_probability || 97.5;
+                    document.getElementById('win-prob-badge').textContent = `Win: ${winProb}%`;
+
+                    // Add to history table matching screenshot
+                    addHistoryRow(periodNum, data.number, colorText, sizeText);
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function addHistoryRow(period, number, color, size) {
+            const rowsContainer = document.getElementById('history-rows');
+            const row = document.createElement('div');
+            row.className = "grid grid-cols-4 py-2 px-3 text-center items-center";
+            const colorClass = color === 'GREEN' ? 'text-emerald-400' : 'text-red-400';
+            const dotColor = color === 'GREEN' ? 'bg-emerald-500' : 'bg-red-500';
+            
+            row.innerHTML = `
+                <div class="text-[11px] text-gray-300">${period.slice(-6)}</div>
+                <div class="font-bold text-sm text-gray-100">${number}</div>
+                <div class="flex items-center justify-center space-x-1">
+                    <span class="w-2 h-2 rounded-full ${dotColor}"></span>
+                    <span class="${colorClass} text-[11px]">${color.toLowerCase()}</span>
+                </div>
+                <div class="font-semibold text-[11px] text-gray-300">${size}</div>
+            `;
+            rowsContainer.prepend(row);
+            if(rowsContainer.children.length > 15) {
+                rowsContainer.removeChild(rowsContainer.lastChild);
+            }
+        }
+
+        async function updateAdminConfig() {
+            const target_platform = document.getElementById('new-target-platform').value.trim();
+            const invitation_code = document.getElementById('new-invitation-code').value.trim();
+            const admin_pass = document.getElementById('new-admin-pass').value.trim();
+            const normal_pass = document.getElementById('new-normal-pass').value.trim();
+            const msg = document.getElementById('admin-msg');
+
+            try {
+                const res = await fetch('/api/admin/update-config', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({target_platform, invitation_code, admin_pass, normal_pass})
+                });
+                const data = await res.json();
+                if(res.ok && data.status === 'success') {
+                    msg.textContent = data.message || 'Updated successfully!';
+                    msg.classList.remove('hidden');
+                    setTimeout(() => msg.classList.add('hidden'), 4000);
+                } else {
+                    alert(data.message || 'Failed to update!');
+                }
+            } catch(e) {
+                alert('Connection error!');
+            }
+        }
+
+        function toggleHide() {
+            alert('Stealth Mode Toggled!');
+        }
+    </script>
+    <!-- Swarm Cursors Animation Script (Inspired by DhvanilPatel/swarm-cursors) -->
+    <script>
+        const canvas = document.getElementById('cursor-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const mouse = { x: width / 2, y: height / 2 };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+        window.addEventListener('touchmove', (e) => {
+            if(e.touches.length > 0) {
+                mouse.x = e.touches[0].clientX;
+                mouse.y = e.touches[0].clientY;
+            }
+        });
+
+        class SwarmParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.color = Math.random() > 0.5 ? '#f59e0b' : '#06b6d4';
+            }
+            update() {
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                this.x += dx * 0.08 + this.speedX;
+                this.y += dy * 0.08 + this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        const particles = [];
+        for(let i = 0; i < 25; i++) {
+            particles.push(new SwarmParticle(Math.random() * width, Math.random() * height));
+        }
+
+        function animateSwarm() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateSwarm);
+        }
+        animateSwarm();
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+    "ROBIUL-75F5C-793AD-319E0-E4CAB": {
+        "owner": "RifatVIP",
+        "created_at": 1793927232.0187566,
+        "expires_at": 1796519232.0187583,
+        "max_devices": 2,
+        "active_devices": [
+            "device_termux_01",
+            "device_phone_02"
+        ]
+    }
+}

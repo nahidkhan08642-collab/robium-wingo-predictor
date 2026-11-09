@@ -272,6 +272,10 @@
                     countdownTimer = 60 - secs;
                 }
                 
+                if(countdownTimer === 30 || countdownTimer === 29) {
+                    fetchSignal();
+                }
+                
                 if(countdownTimer <= 0) {
                     countdownTimer = currentInterval === '30s' ? 30 : 60;
                     fetchSignal();

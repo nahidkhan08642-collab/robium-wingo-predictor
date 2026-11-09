@@ -261,21 +261,32 @@
 
         function startCountdown() {
             if(countdownInterval) clearInterval(countdownInterval);
-            countdownTimer = currentInterval === '30s' ? 30 : 60;
             
-            countdownInterval = setInterval(() => {
-                countdownTimer--;
-                if(countdownTimer < 0) {
+            const updateTimer = () => {
+                const now = new Date();
+                const secs = now.getSeconds();
+                
+                if(currentInterval === '30s') {
+                    countdownTimer = 30 - (secs % 30);
+                } else {
+                    countdownTimer = 60 - secs;
+                }
+                
+                if(countdownTimer <= 0) {
                     countdownTimer = currentInterval === '30s' ? 30 : 60;
                     fetchSignal();
                 }
+                
                 const mins = String(Math.floor(countdownTimer / 60)).padStart(2, '0');
-                const secs = String(countdownTimer % 60).padStart(2, '0');
+                const s = String(countdownTimer % 60).padStart(2, '0');
                 const timerEl = document.getElementById('game-timer');
                 if(timerEl) {
-                    timerEl.textContent = `${mins}:${secs}`;
+                    timerEl.textContent = `${mins}:${s}`;
                 }
-            }, 1000);
+            };
+
+            updateTimer();
+            countdownInterval = setInterval(updateTimer, 1000);
         }
 
         function startAutoPoll() {

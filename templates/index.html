@@ -337,13 +337,36 @@
 
         function addHistoryRow(period, number, color, size) {
             const rowsContainer = document.getElementById('history-rows');
+            const periodShort = period.slice(-6);
+
+            // Check if this period already exists in history table to prevent duplicates
+            const existingRows = rowsContainer.children;
+            for(let r of existingRows) {
+                const periodDiv = r.querySelector('.period-col');
+                if(periodDiv && periodDiv.textContent === periodShort) {
+                    // Update existing row instead of adding duplicate
+                    const colorClass = color === 'GREEN' ? 'text-emerald-400' : (color === 'VIOLET' ? 'text-purple-400' : 'text-red-400');
+                    const dotColor = color === 'GREEN' ? 'bg-emerald-500' : (color === 'VIOLET' ? 'bg-purple-500' : 'bg-red-500');
+                    r.innerHTML = `
+                        <div class="text-[11px] text-gray-300 period-col">${periodShort}</div>
+                        <div class="font-bold text-sm text-gray-100">${number}</div>
+                        <div class="flex items-center justify-center space-x-1">
+                            <span class="w-2 h-2 rounded-full ${dotColor}"></span>
+                            <span class="${colorClass} text-[11px]">${color.toLowerCase()}</span>
+                        </div>
+                        <div class="font-semibold text-[11px] text-gray-300">${size}</div>
+                    `;
+                    return;
+                }
+            }
+
             const row = document.createElement('div');
-            row.className = "grid grid-cols-4 py-2 px-3 text-center items-center";
-            const colorClass = color === 'GREEN' ? 'text-emerald-400' : 'text-red-400';
-            const dotColor = color === 'GREEN' ? 'bg-emerald-500' : 'bg-red-500';
+            row.className = "grid grid-cols-4 py-2 px-3 text-center items-center border-b border-gray-800/50";
+            const colorClass = color === 'GREEN' ? 'text-emerald-400' : (color === 'VIOLET' ? 'text-purple-400' : 'text-red-400');
+            const dotColor = color === 'GREEN' ? 'bg-emerald-500' : (color === 'VIOLET' ? 'bg-purple-500' : 'bg-red-500');
             
             row.innerHTML = `
-                <div class="text-[11px] text-gray-300">${period.slice(-6)}</div>
+                <div class="text-[11px] text-gray-300 period-col">${periodShort}</div>
                 <div class="font-bold text-sm text-gray-100">${number}</div>
                 <div class="flex items-center justify-center space-x-1">
                     <span class="w-2 h-2 rounded-full ${dotColor}"></span>

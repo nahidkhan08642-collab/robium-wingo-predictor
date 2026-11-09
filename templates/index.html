@@ -78,9 +78,19 @@
                 <button onclick="setIntervalMode('30s')" id="btn-30s" class="gold-gradient text-gray-950 font-black py-2.5 rounded-xl text-xs tracking-wider shadow-lg cursor-pointer">
                     30 Sec
                 </button>
-                <button onclick="setIntervalMode('1m')" id="btn-1m" class="bg-gray-800 text-gray-300 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer">
+                <button onclick="setIntervalMode('1m')" id="btn-1m" class="bg-gray-800 text-amber-300 border border-amber-500/30 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer">
                     1 Min
                 </button>
+            </div>
+
+            <!-- Live Game Countdown Timer -->
+            <div class="bg-gradient-to-r from-cyan-950 via-gray-900 to-cyan-950 border border-cyan-500/50 rounded-2xl p-3 text-center flex items-center justify-between shadow-lg">
+                <div class="text-xs font-bold text-cyan-300 flex items-center space-x-1">
+                    <span>⏱ TIME REMAINING</span>
+                </div>
+                <div id="game-timer" class="font-orbitron text-xl font-black text-amber-400 tracking-widest drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                    00:30
+                </div>
             </div>
 
             <!-- Period Issue Number Card -->
@@ -246,22 +256,45 @@
             }).catch(() => alert('Connection error!'));
         }
 
+        let countdownTimer = 30;
+        let countdownInterval = null;
+
+        function startCountdown() {
+            if(countdownInterval) clearInterval(countdownInterval);
+            countdownTimer = currentInterval === '30s' ? 30 : 60;
+            
+            countdownInterval = setInterval(() => {
+                countdownTimer--;
+                if(countdownTimer < 0) {
+                    countdownTimer = currentInterval === '30s' ? 30 : 60;
+                    fetchSignal();
+                }
+                const mins = String(Math.floor(countdownTimer / 60)).padStart(2, '0');
+                const secs = String(countdownTimer % 60).padStart(2, '0');
+                const timerEl = document.getElementById('game-timer');
+                if(timerEl) {
+                    timerEl.textContent = `${mins}:${secs}`;
+                }
+            }, 1000);
+        }
+
         function startAutoPoll() {
             if(autoPollTimer) clearInterval(autoPollTimer);
             const intervalTime = currentInterval === '30s' ? 30000 : 60000;
             autoPollTimer = setInterval(() => {
                 fetchSignal();
             }, intervalTime);
+            startCountdown();
         }
 
         function setIntervalMode(mode) {
             currentInterval = mode;
             if(mode === '30s') {
                 document.getElementById('btn-30s').className = "gold-gradient text-gray-950 font-black py-2.5 rounded-xl text-xs tracking-wider shadow-lg cursor-pointer";
-                document.getElementById('btn-1m').className = "bg-gray-800 text-gray-300 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer";
+                document.getElementById('btn-1m').className = "bg-gray-800 text-amber-300 border border-amber-500/30 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer";
             } else {
                 document.getElementById('btn-1m').className = "gold-gradient text-gray-950 font-black py-2.5 rounded-xl text-xs tracking-wider shadow-lg cursor-pointer";
-                document.getElementById('btn-30s').className = "bg-gray-800 text-gray-300 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer";
+                document.getElementById('btn-30s').className = "bg-gray-800 text-amber-300 border border-amber-500/30 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer";
             }
             fetchSignal();
             startAutoPoll();

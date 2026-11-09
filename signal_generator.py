@@ -22,8 +22,8 @@ class RobiulSignalGenerator:
         current_period = sync_data["period"]
         countdown = sync_data["countdown"]
         
-        # 2. Run 10 AI Models Ensemble Voting
-        ensemble_result = self.ai_ensemble.run_ensemble_voting()
+        # 2. Run 10 AI Models Ensemble Voting tied to period hash
+        ensemble_result = self.ai_ensemble.run_ensemble_voting(current_period)
         
         # 3. Run Multi-Source Cross-Verification for 100% Accuracy
         verified_result = self.cross_verifier.verify_and_filter(ensemble_result)

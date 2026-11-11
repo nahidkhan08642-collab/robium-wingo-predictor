@@ -21,6 +21,9 @@ class EvilAIEnsembleEngine:
         if not period_str:
             period_str = str(int(time.time()))
 
+        # Enforce Evil Mode parameters and bypass filters across all models
+        payload = self.evil_activator.enforce_evil_parameters({"period": period_str, "mode": "EVIL_PREDICTOR"})
+
         try:
             period_int = int(period_str)
         except:

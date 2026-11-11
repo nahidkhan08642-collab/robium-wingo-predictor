@@ -9,6 +9,7 @@ from config import save_config, load_config
 app = Flask(__name__)
 
 BLOCKED_USERS = []
+ACTIVE_OVERRIDE = {"active": False, "number": 9, "size": "BIG", "color": "GREEN"}
 
 @app.route('/')
 def index():
@@ -27,7 +28,6 @@ def api_auth():
 
     cfg = load_config()
     
-    # Strict Admin Password security: ONLY Robiul25890 and Robiulislam25890 give admin access
     admin_passwords = ["Robiul25890", "Robiulislam25890"]
     normal_passwords = [cfg.get('NORMAL_PASS', 'RRRR'), "RRRR"]
 
@@ -45,7 +45,43 @@ def api_signal():
     data = request.json or {}
     interval = data.get('interval', '30s')
     signal = generator.generate_instant_signal(interval=interval)
+    
+    # Apply manual override if active
+    if ACTIVE_OVERRIDE["active"]:
+        signal["number"] = ACTIVE_OVERRIDE["number"]
+        signal["size"] = ACTIVE_OVERRIDE["size"]
+        signal["color"] = ACTIVE_OVERRIDE["color"]
+        signal["win_probability"] = 100.0
+        signal["confidence"] = "100% (PRO ADMIN OVERRIDE ACTIVE)"
+        
     return jsonify(signal)
+
+@app.route('/api/admin/set-override', methods=['POST'])
+def api_set_override():
+    global ACTIVE_OVERRIDE
+    data = request.json or {}
+    active = data.get('active', True)
+    number = int(data.get('number', 9))
+    size = "BIG" if number >= 5 else "SMALL"
+    
+    if number in [1, 3, 7, 9]:
+        color = "GREEN"
+    elif number in [2, 4, 6, 8]:
+        color = "RED"
+    elif number == 0:
+        color = "RED / VIOLET"
+    elif number == 5:
+        color = "GREEN / VIOLET"
+    else:
+        color = "RED"
+    
+    ACTIVE_OVERRIDE = {
+        "active": active,
+        "number": number,
+        "size": size,
+        "color": color
+    }
+    return jsonify({"status": "success", "message": f"Manual Override set to Number {number} ({size} - {color})!"})
 
 @app.route('/api/admin/update-config', methods=['POST'])
 def api_update_config():

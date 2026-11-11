@@ -9,7 +9,7 @@ CONFIG_STATE_FILE = os.path.join(os.path.dirname(__file__), "config_state.json")
 
 # Default Values
 DEFAULT_CONFIG = {
-    "APP_NAME": "Robiul Predictor & Hacker Tool",
+    "APP_NAME": "Robiul predictor001",
     "TARGET_PLATFORM": "https://dkwin9.com",
     "INVITATION_CODE": "787222388616",
     "APP_ID": "2388616",

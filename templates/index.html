@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robiul Islam - 30 Sec Predictor V2</title>
+    <title>Robiul predictor001 - Wingo AI Predictor</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <!-- Swarm Cursor Canvas Removed -->
@@ -47,7 +47,7 @@
                 
                 <!-- Gold Banner -->
                 <div class="mt-2 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-gray-950 font-extrabold font-orbitron text-xs py-2 px-4 rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.5)] border border-amber-300">
-                    30 SEC PREDICTOR V2
+                    ROBIUL PREDICTOR 001
                 </div>
             </div>
 
@@ -75,10 +75,10 @@
         <div id="screen-dashboard" class="p-5 space-y-4 hidden">
             <!-- Top Bar with Interval Toggles -->
             <div class="grid grid-cols-2 gap-2">
-                <button onclick="setIntervalMode('30s')" id="btn-30s" class="gold-gradient text-gray-950 font-black py-2.5 rounded-xl text-xs tracking-wider shadow-lg cursor-pointer">
+                <button onclick="setIntervalMode('30s')" id="btn-30s" class="bg-gray-800 text-amber-300 border border-amber-500/30 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer">
                     30 Sec
                 </button>
-                <button onclick="setIntervalMode('1m')" id="btn-1m" class="bg-gray-800 text-amber-300 border border-amber-500/30 font-bold py-2.5 rounded-xl text-xs tracking-wider hover:bg-gray-700 cursor-pointer">
+                <button onclick="setIntervalMode('1m')" id="btn-1m" class="gold-gradient text-gray-950 font-black py-2.5 rounded-xl text-xs tracking-wider shadow-lg cursor-pointer">
                     1 Min
                 </button>
             </div>
@@ -184,12 +184,48 @@
                 <button onclick="updateAdminConfig()" class="w-full gold-gradient text-gray-950 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Update Link & Passwords</button>
                 <p id="admin-msg" class="text-xs text-emerald-400 text-center hidden"></p>
             </div>
+
+            <!-- Pro Manual Signal Override (100% Control) -->
+            <div class="bg-gray-900/90 border border-amber-500/50 rounded-2xl p-4 space-y-3 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">👑 Pro Manual Signal Override (100% Win)</h3>
+                <div>
+                    <label class="text-[11px] text-gray-400 block mb-1">Select Winning Number (0 to 9)</label>
+                    <select id="override-number" class="w-full bg-gray-950 border border-amber-500/50 px-3 py-2 rounded-xl text-xs font-mono text-amber-300">
+                        <option value="0">0 (Small / Red-Violet)</option>
+                        <option value="1">1 (Small / Green)</option>
+                        <option value="2">2 (Small / Red)</option>
+                        <option value="3">3 (Small / Green)</option>
+                        <option value="4">4 (Small / Red)</option>
+                        <option value="5">5 (Big / Green-Violet)</option>
+                        <option value="6">6 (Big / Red)</option>
+                        <option value="7">7 (Big / Green)</option>
+                        <option value="8">8 (Big / Red)</option>
+                        <option value="9" selected>9 (Big / Green)</option>
+                    </select>
+                </div>
+                <button onclick="setOverride()" class="w-full gold-gradient text-gray-950 font-black py-2.5 rounded-xl text-xs tracking-wider shadow-lg cursor-pointer">FORCE NEXT SIGNAL (100% ACCURACY)</button>
+            </div>
         </div>
 
     </div>
 
     <script>
-        let currentInterval = '30s';
+        let currentInterval = '1m';
+
+        async function setOverride() {
+            const num = document.getElementById('override-number').value;
+            try {
+                const res = await fetch('/api/admin/set-override', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({active: true, number: num})
+                });
+                const data = await res.json();
+                alert(data.message || 'Override applied successfully!');
+            } catch(e) {
+                alert('Connection error!');
+            }
+        }
 
         function showScreen(screenId) {
             document.getElementById('screen-lock').classList.add('hidden');
@@ -272,7 +308,7 @@
                     countdownTimer = 60 - secs;
                 }
                 
-                if(countdownTimer === 30 || countdownTimer === 29) {
+                if(countdownTimer === 30 || countdownTimer === 29 || countdownTimer === 28 || countdownTimer === 60 || countdownTimer === 59 || countdownTimer === 58) {
                     fetchSignal();
                 }
                 

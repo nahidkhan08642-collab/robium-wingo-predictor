@@ -1,11 +1,13 @@
 import random
 import logging
+from evil_mode import EvilModeActivation
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - [REVERSE-ENG] - %(message)s')
 
 class WingoReverseEngine:
     def __init__(self):
-        logging.info("Initializing Advanced Wingo Reverse-Engineered Markov & Pattern Transition Core...")
+        self.evil_activator = EvilModeActivation()
+        logging.info("Initializing Advanced Wingo Reverse-Engineered Markov & Pattern Transition Core in EVIL MODE...")
         # Markov chain transition probability weights for Wingo 0-9
         self.transition_matrix = {
             0: [1, 2, 5, 8],
@@ -23,8 +25,9 @@ class WingoReverseEngine:
     def analyze_history_patterns(self, history_list):
         """
         Performs deep reverse-engineered Markov chain probability transition analysis 
-        on 30s and 1m Wingo historical draw sequences.
+        on 30s and 1m Wingo historical draw sequences under Evil Mode.
         """
+        self.evil_activator.enforce_evil_parameters({"history_len": len(history_list), "mode": "EVIL_REVERSE_ENGINE"})
         if not history_list or len(history_list) == 0:
             # Seed number based on weighted high-probability Wingo distribution
             number = random.choice([1, 3, 4, 6, 7, 8])

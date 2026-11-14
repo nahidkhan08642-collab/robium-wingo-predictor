@@ -9,31 +9,29 @@ class WingoLivePeriodSync:
         logging.info("Initializing Precision Synchronized Wingo Period & Countdown Engine...")
 
     def get_current_period_and_countdown(self, game_type="30s"):
-        # Use precise UTC / local time alignment with drift correction
-        now = datetime.datetime.now() # Using local system time to match frontend and user timezone perfectly
+        # Use precise local time (Bangladesh UTC+6)
+        now = datetime.datetime.utcnow() + datetime.timedelta(hours=6)
         date_str = now.strftime("%Y%m%d")
         
-        total_seconds_today = now.hour * 3600 + now.minute * 60 + now.second + now.microsecond / 1000000.0
+        seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second + now.microsecond / 1000000.0
         
         if game_type == "30s":
             interval_duration = 30.0
-            total_intervals = int(total_seconds_today // interval_duration) + 1
-            elapsed_in_interval = total_seconds_today % interval_duration
+            # Precise synced base index at midnight (721) + elapsed intervals today
+            base_index = 721 + int(seconds_since_midnight // interval_duration)
+            elapsed_in_interval = seconds_since_midnight % interval_duration
             countdown = int(interval_duration - elapsed_in_interval)
             
-            # QWIN Wingo 30s period ID format: YYYYMMDD + 10005 + 4-digit index matching game
-            base_index = 845 + int((total_seconds_today - (1 * 3600 + 2 * 60)) // 30)
             period_str = f"{date_str}10005{base_index:04d}"
             next_period_str = f"{date_str}10005{base_index + 1:04d}"
         else: # 1m
             interval_duration = 60.0
-            total_intervals = int(total_seconds_today // interval_duration) + 1
-            elapsed_in_interval = total_seconds_today % interval_duration
+            base_index = 361 + int(seconds_since_midnight // interval_duration)
+            elapsed_in_interval = seconds_since_midnight % interval_duration
             countdown = int(interval_duration - elapsed_in_interval)
             
-            # Standard Wingo 1m period ID format: YYYYMMDD + 10001 + 5-digit index
-            period_str = f"{date_str}10001{total_intervals:05d}"
-            next_period_str = f"{date_str}10001{total_intervals + 1:05d}"
+            period_str = f"{date_str}10001{base_index:04d}"
+            next_period_str = f"{date_str}10001{base_index + 1:04d}"
 
         trading_status = "LOCKED (Last 5s)" if countdown <= 5 else "TRADING OPEN"
 

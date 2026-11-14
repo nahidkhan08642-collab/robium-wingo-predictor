@@ -480,6 +480,15 @@
         function toggleHide() {
             alert('Stealth Mode Toggled!');
         }
+
+        // Auto-refresh and re-sync when app comes back to foreground after being backgrounded (e.g. after 15 minutes)
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) {
+                console.log("App brought back to foreground — re-syncing timer and fetching fresh signal...");
+                fetchSignal();
+                startCountdown();
+            }
+        });
     </script>
 </body>
 </html>

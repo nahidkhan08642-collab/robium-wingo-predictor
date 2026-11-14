@@ -21,9 +21,10 @@ class WingoLivePeriodSync:
             elapsed_in_interval = total_seconds_today % interval_duration
             countdown = int(interval_duration - elapsed_in_interval)
             
-            # Standard Wingo 30s period ID format: YYYYMMDD + 10003 + 5-digit index
-            period_str = f"{date_str}10003{total_intervals:05d}"
-            next_period_str = f"{date_str}10003{total_intervals + 1:05d}"
+            # QWIN Wingo 30s period ID format: YYYYMMDD + 10005 + 4-digit index matching game
+            base_index = 845 + int((total_seconds_today - (1 * 3600 + 2 * 60)) // 30)
+            period_str = f"{date_str}10005{base_index:04d}"
+            next_period_str = f"{date_str}10005{base_index + 1:04d}"
         else: # 1m
             interval_duration = 60.0
             total_intervals = int(total_seconds_today // interval_duration) + 1

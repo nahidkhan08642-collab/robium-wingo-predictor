@@ -10,7 +10,7 @@ class WingoLivePeriodSync:
 
     def get_current_period_and_countdown(self, game_type="30s"):
         # Use precise UTC / local time alignment with drift correction
-        now = datetime.datetime.utcnow() # Using UTC to match gaming servers standard time
+        now = datetime.datetime.now() # Using local system time to match frontend and user timezone perfectly
         date_str = now.strftime("%Y%m%d")
         
         total_seconds_today = now.hour * 3600 + now.minute * 60 + now.second + now.microsecond / 1000000.0

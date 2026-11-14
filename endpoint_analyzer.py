@@ -5,7 +5,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class DKWinEndpointAnalyzer:
-    def __init__(self, target_url="https://dkwin9.com"):
+    def __init__(self, target_url="https://dkwwin.com"):
         self.target_url = target_url
         self.session = requests.Session()
         self.session.headers.update({

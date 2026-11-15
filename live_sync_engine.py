@@ -6,33 +6,35 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - [LIVE-SYNC] - %(me
 
 class WingoLivePeriodSync:
     def __init__(self):
-        logging.info("Initializing Exact DKWin Matched Period Sync Engine...")
+        logging.info("Initializing Exact DKWin Live Period Sync Engine...")
 
     def get_current_period_and_countdown(self, game_type="30s"):
         try:
-            # DKWin period numbering sync based on precise UTC offset and daily total 30s intervals starting at 00:00:00 UTC
+            # DKWin 30s period index calculation based on exact UTC epoch offset
             now_utc = datetime.datetime.now(datetime.timezone.utc)
             date_str = now_utc.strftime("%Y%m%d")
             
-            seconds_since_midnight_utc = now_utc.hour * 3600 + now_utc.minute * 60 + now_utc.second + now_utc.microsecond / 1000000.0
+            # Total seconds elapsed today in UTC
+            seconds_since_midnight = now_utc.hour * 3600 + now_utc.minute * 60 + now_utc.second + now_utc.microsecond / 1000000.0
             
             if game_type == "30s":
-                interval_duration = 30.0
-                total_intervals = int(seconds_since_midnight_utc // interval_duration)
+                interval = 30.0
+                # Match exact DKWin 30s period sequence observed (e.g. ~1500 around 18:30 UTC+6)
+                # 18:30 UTC+6 = 12:30 UTC. Seconds since midnight UTC = 12*3600 + 30*60 = 45000s. 45000 / 30 = 1500 intervals!
+                total_intervals = int(seconds_since_midnight // interval)
                 
-                # Match exact DKWin format: YYYYMMDD10005XXXX
                 period_index = total_intervals
-                elapsed = seconds_since_midnight_utc % interval_duration
-                countdown = int(interval_duration - elapsed)
+                elapsed = seconds_since_midnight % interval
+                countdown = int(interval - elapsed)
                 
                 period_str = f"{date_str}10005{period_index}"
                 next_period_str = f"{date_str}10005{period_index + 1}"
             else: # 1m
-                interval_duration = 60.0
-                total_intervals = int(seconds_since_midnight_utc // interval_duration)
+                interval = 60.0
+                total_intervals = int(seconds_since_midnight // interval)
                 period_index = total_intervals
-                elapsed = seconds_since_midnight_utc % interval_duration
-                countdown = int(interval_duration - elapsed)
+                elapsed = seconds_since_midnight % interval
+                countdown = int(interval - elapsed)
                 
                 period_str = f"{date_str}10001{period_index}"
                 next_period_str = f"{date_str}10001{period_index + 1}"
@@ -47,7 +49,7 @@ class WingoLivePeriodSync:
                 "game_type": game_type
             }
         except Exception as e:
-            logging.warning(f"Live sync fallback triggered: {e}")
+            logging.warning(f"Period sync error: {e}")
             now_utc = datetime.datetime.now(datetime.timezone.utc)
             date_str = now_utc.strftime("%Y%m%d")
             return {

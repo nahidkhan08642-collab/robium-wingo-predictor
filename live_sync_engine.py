@@ -6,34 +6,36 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - [LIVE-SYNC] - %(me
 
 class WingoLivePeriodSync:
     def __init__(self):
-        logging.info("Initializing Real-Time Dynamic Wingo Period & Platform API Sync Engine...")
+        logging.info("Initializing Exact DKWin Matched Period Sync Engine...")
 
     def get_current_period_and_countdown(self, game_type="30s"):
         try:
-            now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=6)))
-            date_str = now.strftime("%Y%m%d")
+            # DKWin period numbering sync based on precise UTC offset and daily total 30s intervals starting at 00:00:00 UTC
+            now_utc = datetime.datetime.now(datetime.timezone.utc)
+            date_str = now_utc.strftime("%Y%m%d")
             
-            seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second + now.microsecond / 1000000.0
+            seconds_since_midnight_utc = now_utc.hour * 3600 + now_utc.minute * 60 + now_utc.second + now_utc.microsecond / 1000000.0
             
             if game_type == "30s":
                 interval_duration = 30.0
-                total_intervals_today = int(seconds_since_midnight // interval_duration)
-                # DKWin 30s period index matches total 30s intervals from midnight + offset (observed ~1491-1500 range)
-                base_index = total_intervals_today
-                elapsed_in_interval = seconds_since_midnight % interval_duration
-                countdown = int(interval_duration - elapsed_in_interval)
+                total_intervals = int(seconds_since_midnight_utc // interval_duration)
                 
-                period_str = f"{date_str}10005{base_index}"
-                next_period_str = f"{date_str}10005{base_index + 1}"
+                # Match exact DKWin format: YYYYMMDD10005XXXX
+                period_index = total_intervals
+                elapsed = seconds_since_midnight_utc % interval_duration
+                countdown = int(interval_duration - elapsed)
+                
+                period_str = f"{date_str}10005{period_index}"
+                next_period_str = f"{date_str}10005{period_index + 1}"
             else: # 1m
                 interval_duration = 60.0
-                total_intervals_today = int(seconds_since_midnight // interval_duration)
-                base_index = total_intervals_today
-                elapsed_in_interval = seconds_since_midnight % interval_duration
-                countdown = int(interval_duration - elapsed_in_interval)
+                total_intervals = int(seconds_since_midnight_utc // interval_duration)
+                period_index = total_intervals
+                elapsed = seconds_since_midnight_utc % interval_duration
+                countdown = int(interval_duration - elapsed)
                 
-                period_str = f"{date_str}10001{base_index}"
-                next_period_str = f"{date_str}10001{base_index + 1}"
+                period_str = f"{date_str}10001{period_index}"
+                next_period_str = f"{date_str}10001{period_index + 1}"
 
             trading_status = "LOCKED (Last 5s)" if countdown <= 5 else "TRADING OPEN"
 
@@ -46,8 +48,8 @@ class WingoLivePeriodSync:
             }
         except Exception as e:
             logging.warning(f"Live sync fallback triggered: {e}")
-            now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=6)))
-            date_str = now.strftime("%Y%m%d")
+            now_utc = datetime.datetime.now(datetime.timezone.utc)
+            date_str = now_utc.strftime("%Y%m%d")
             return {
                 "period": f"{date_str}100051500",
                 "next_period": f"{date_str}100051501",
